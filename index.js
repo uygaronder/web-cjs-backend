@@ -1,4 +1,7 @@
+// configure dotnev
+require('dotenv').config();
 require("./app/db/db.connect.js");
+
 const express = require('express');
 const app = express();
 
@@ -10,6 +13,6 @@ app.get('/', (req, res) => {
 );
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`App listening at http://localhost:${port}`);
     }
 );
