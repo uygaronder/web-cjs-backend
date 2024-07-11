@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
-const db = mongoose.connection;
 
-console.log('MONGO_CONNECTION_URI: ', process.env.MONGO_CONNECTION_URI);
-const mongoURI = process.env.ENV==='development' ? 'mongodb://localhost:27017/' + 'mydb' : process.env.MONGODB_URI;
+const databaseUrl = process.env.MONGO_CONNECTION_URI || 'mongodb://localhost:27017/your_database_url';
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(databaseUrl)
+    .then(() => {
+        console.log('Connected to the database');
+    })
+    .catch((error) => {
+        console.error('Error connecting to the database:', error);
+    });
 
-db.on('error', (err) => console.log(err.message + ' is Mongod not running?'));
-db.on('connected', () => console.log('mongo connected: ', mongoURI));
-db.on('disconnected', () => console.log('mongo disconnected'));
+module.exports = mongoose;
