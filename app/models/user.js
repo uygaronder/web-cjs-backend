@@ -6,14 +6,24 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    anonymous: {
+        type: Boolean,
+        default: false
+    },
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: function() {
+            return !this.anonymous;
+        }
     },
     password: {
         type: String,
-        required: true
+        required: function() {
+            return !this.anonymous;
+        }
+    },
+    avatar: {
+        type: String
     },
     chats: [{
         type: mongoose.Schema.Types.ObjectId,

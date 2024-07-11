@@ -1,5 +1,6 @@
 require('dotenv').config();
-require("./app/db/db.connect.js");
+require("./app/utils/db.connect.js");
+require("./app/utils/cloudinary.js");
 
 const express = require('express');
 const app = express();
