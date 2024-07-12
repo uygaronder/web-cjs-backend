@@ -1,4 +1,4 @@
-const db = require('../db'); // Assuming you have a separate file for database connection
+const db = require('../app/utils/db.connect');
 
 describe('Database Connection', () => {
     it('should connect to the database', async () => {
@@ -21,7 +21,6 @@ describe('Database Connection', () => {
 
     it('should handle connection errors', async () => {
         try {
-            // Modify the database connection URL to an invalid one to simulate a connection error
             process.env.MONGO_CONNECTION_URI = 'mongodb://localhost:27017/invalid_database_url';
             await db.connect(); // Replace `db.connect()` with your actual database connection function
             console.log('Connected to the database');
@@ -32,7 +31,6 @@ describe('Database Connection', () => {
 
     it('should handle disconnection errors', async () => {
         try {
-            // Modify the database connection URL to an invalid one to simulate a disconnection error
             process.env.MONGO_CONNECTION_URI = 'mongodb://localhost:27017/invalid_database_url';
             await db.disconnect(); // Replace `db.disconnect()` with your actual database disconnection function
             console.log('Disconnected from the database');

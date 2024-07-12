@@ -32,7 +32,18 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    google: {
+        id: String,
+        token: String,
+        email: String,
+        name: String
+    },
+    settings: {
+        authToken: String,
+        authTokenExpiration: Date
     }
+
 });
 
 const User = mongoose.model('User', userSchema);
