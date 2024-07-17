@@ -40,4 +40,19 @@ router.get('/google/callback', passport.authenticate('google'), (req, res) => {
     res.redirect('/');
 });
 
+router.post("/anonymous", async (req, res) => {
+    
+    try {
+        const user = new User({
+            username: req.body.username,
+            keepLoggedIn: req.body.keepLoggedIn,
+        });
+        //await user.save();
+        console.log(user);
+        res.status(201).send(user);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
 module.exports = router;
