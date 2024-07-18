@@ -2,8 +2,6 @@ const nodemailer = require('nodemailer');
 
 const defMailTemplate = "./mailTemplates/defaultdefMailTemplate";
 
-console.log(defMailTemplate);
-
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -13,17 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendMail(email, subject, template = defMailTemplate, data = {}) {
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL,
-            to: email,
-            subject,
-            text
-        });
-        console.log('Email sent');
-    } catch (error) {
-        console.error('Error sending email');
-    }
+    // handle sendmail
 }
 
 module.exports = transporter;
