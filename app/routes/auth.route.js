@@ -10,6 +10,10 @@ const sendAuthenticationEmail = async (email, token) => {
     await nodemailer.sendMail(email, subject, './mailTemplates/authMailTemplate', { token });
 }
 
+router.get('/auth', (req, res) => {
+    res.send(req.user);
+});
+
 router.post('/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
