@@ -6,6 +6,7 @@ import { Redirect } from 'react-router-dom';
 // Import the necessary dependencies
 
 
+
 const AuthMiddleware = ({ component: Component, isAuthenticated, ...rest }) => {
     if (isAuthenticated) {
         return <Component {...rest} />;
