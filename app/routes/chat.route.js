@@ -1,11 +1,13 @@
 import { Router } from 'express';
 
-import { ChatRoom, Message } from '../models';
+import { Chatroom, Message } from '../models';
 
 const router = Router();
 
 router.post("/newChatRoom", (req, res) => {
-    ChatRoom.create(req.body)
+    const { name, users } = req.body;
+    
+    Chatroom.create({ name, users })
         .then(() => {
             res.send("New chat room created");
         });
@@ -20,7 +22,7 @@ router.post("/newMessage", (req, res) => {
                 .findByIdAndUpdate(req
                     .body.room, {
                         $push: {
-                            messages: message._id
+                            messages: Message._id
                         }
                     })
                 .then(() => {

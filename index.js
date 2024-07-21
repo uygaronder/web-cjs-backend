@@ -5,6 +5,8 @@ require("./app/utils/cloudinary.js");
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo');
+const passport = require('passport');
 const app = express();
 const port = process.env.PORT || 5000;
 const http = require('http').createServer(app);
@@ -41,7 +43,7 @@ app.use(session
             secure: false,
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-            sameSite: "none",
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         },
     })
 );

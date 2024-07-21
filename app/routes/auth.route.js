@@ -10,6 +10,12 @@ const sendAuthenticationEmail = async (email, token) => {
     await nodemailer.sendMail(email, subject, './mailTemplates/authMailTemplate', { token });
 }
 
+const checkUsername = async (username) => {
+    const user = await User
+        .findOne({ username: username });
+    return user;
+}
+
 router.get('/auth', (req, res) => {
     res.send(req.user);
 });
@@ -45,13 +51,18 @@ router.get('/google/callback', passport.authenticate('google'), (req, res) => {
 });
 
 router.post("/anonymous", async (req, res) => {
-    
+    const existingUser = await checkUsername(req.body.username);
+    if (existingUser) {
+        return res.status(201).send(existingUser);
+    }
+
     try {
         const user = new User({
             username: req.body.username,
             keepLoggedIn: req.body.keepLoggedIn,
+            anonymous: true
         });
-        //await user.save();
+        await user.save();
         console.log(user);
         res.status(201).send(user);
     } catch (error) {

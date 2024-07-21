@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const chatSchema = new mongoose.Schema({
+const chatroomSchema = new mongoose.Schema({
     users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -27,6 +27,6 @@ const chatSchema = new mongoose.Schema({
     }]
 });
 
-const Chat = mongoose.model('Chat', chatSchema);
+const Chatroom = mongoose.model('Chat', chatroomSchema);
 
-module.exports = Chat;
+module.exports = Chatroom;
