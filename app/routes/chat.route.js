@@ -13,6 +13,23 @@ router.post("/newChatRoom", (req, res) => {
         });
 });
 
+// get chats for a user
+router.get("/getChats", (req, res) => {
+    Chatroom.find({ users: req.user._id })
+        .then((chatrooms) => {
+            res.send(chatrooms);
+        });
+});
+
+// get messages for a chat room
+router.get("/getMessages", (req, res) => {
+    Chatroom.findById(req.query.id)
+        .populate("messages")
+        .then((chatroom) => {
+            res.send(chatroom.messages);
+        });
+});
+
 router.post("/newMessage", (req, res) => {
     req.body.sender = req.user._id;
     req.body.timestamp = new Date();
