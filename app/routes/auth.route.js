@@ -7,7 +7,7 @@ const nodemailer = require('../utils/nodemailer');
 
 const sendAuthenticationEmail = async (email, token) => {
     const subject = 'Authentication';
-    await nodemailer.sendMail(email, subject, './mailTemplates/authMailTemplate', { token });
+    nodemailer.sendMail(email, subject, './mailTemplates/authMailTemplate', { token });
 }
 
 const checkUsername = async (username) => {
