@@ -40,10 +40,23 @@ const userSchema = new mongoose.Schema({
         name: String
     },
     settings: {
-        authToken: String,
-        authTokenExpiration: Date
-    }
-
+        keepLoggedIn: Boolean,
+        theme: String,
+        invites: {
+            received: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Chat'
+            }],
+            sent: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Chat'
+            }]
+        },
+        authToken: {
+            token: String,
+            expires: Date
+        },
+    },
 });
 
 const User = mongoose.model('User', userSchema);

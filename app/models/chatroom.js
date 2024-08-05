@@ -6,24 +6,16 @@ const chatroomSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }],
-    room: {
-        type: String,
-        required: true
-    },
-    messages: [{
-        sender: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        content: {
+    chatroomInfo: {
+        name: {
             type: String,
             required: true
         },
-        timestamp: {
-            type: Date,
-            default: Date.now
-        }
+    },
+    messages: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message',
+        required: true
     }]
 });
 

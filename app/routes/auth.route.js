@@ -1,9 +1,10 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const nodemailer = require('../utils/nodemailer');
+
+const User = require('../models/user');
 
 const sendAuthenticationEmail = async (email, token) => {
     const subject = 'Authentication';

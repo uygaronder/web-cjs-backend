@@ -51,18 +51,19 @@ app.use(session
 /*
 const userRouter = require("./app/routes/user.route.js");
 const notificationRouter = require("./app/routes/notification.route.js");
-const chatRouter = require("./app/routes/chat.route.js");
 */
+const chatRouter = require("./app/routes/chat.route.js");
 const apiRouter = require("./app/routes/api.route.js");
 const authRouter = require("./app/routes/auth.route.js");
 
 /*
 app.use('/users', userRouter);
 app.use('/notifications', notificationRouter);
-app.use('/chats', chatRouter);
 */
+app.use('/chat', chatRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
+
 
 io.on('connection', (socket) => {
     console.log('A user connected');

@@ -9,17 +9,30 @@ const messageSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    replies: [{
-        text: {
-            type: String,
+    replies: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Message',
+            required: false
+        }
+    ],
+    reply: {
+        isAReply: {
+            type: Boolean,
             required: true
         },
-        user: {
+        replyTo: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
+            ref: 'Message',
+            required: false
         }
-    }],
+    },
+    reactions: [
+        {
+        type: String,
+        required: true
+        }
+    ],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
