@@ -7,6 +7,7 @@ const Message = require('../models/message');
 router.post("/createchatroom", (req, res) => {
     const { chatroomInfo, creator, invitedUsers, } = req.body;
     
+    console.log(req.body);
 
     Chatroom.create({ ...chatroomInfo, users: [creator, ...invitedUsers] })
         .then(() => {
