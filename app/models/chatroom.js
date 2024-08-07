@@ -14,11 +14,12 @@ const chatroomSchema = new mongoose.Schema({
         creator: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true
+            required: true,
         },
         roomType: {
             type: String,
-            required: true
+            required: true,
+            default: 'group'
         },
         createdAt: {
             type: Date,
@@ -26,8 +27,14 @@ const chatroomSchema = new mongoose.Schema({
         },
         roomPublicity: {
             type: String,
+            default: 'private',
             required: true
         },
+        invitedUsers: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: false
+        }],
     },
     messages: [{
         type: mongoose.Schema.Types.ObjectId,

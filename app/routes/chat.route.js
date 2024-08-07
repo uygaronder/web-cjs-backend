@@ -3,40 +3,62 @@ const router = express.Router();
 
 const Chatroom = require('../models/chatroom');
 const Message = require('../models/message');
+const User = require('../models/user');
 
 router.post("/createchatroom", (req, res) => {
-    const { chatroomInfo, creator, invitedUsers, } = req.body;
-    
-    console.log(req.body);
-
-    Chatroom.create({ ...chatroomInfo, users: [creator, ...invitedUsers] })
-        .then(() => {
-            res.send("New chat room created");
+    const { chatroomInfo, creator } = req.body;
+    const newChatroom = new Chatroom({
+        users: [creator],
+        chatroomInfo,
+        messages: [],
+    });
+    User.findById(creator).then((user) => {
+        user.chats.push(newChatroom._id);
+        user.save().then(() => {
+            newChatroom.save()
+                .then(() => {
+                    res.send("Chatroom created");
+                })
+                .catch((error) => {
+                    res.status(500).send(error.message);
+                });
         });
+    });
 });
 
 router.get("/getChats", (req, res) => {
     const userID = req.query.userID;
-    Chatroom.find({ users: userID })
-        .then((chatrooms) => {
-            res.send(chatrooms);
+    User.findById(userID)
+        .then((user) => {
+            const chatroomIds = user.chats;
+            Chatroom.find({ _id: { $in: chatroomIds }, users: userID })
+                .populate({
+                    path: 'messages',
+                    options: { sort: { createdAt: -1 }, limit: 1 }
+                })
+                .then((chatrooms) => {
+                    res.send(chatrooms);
+                })
+                .catch((error) => {
+                    res.status(500).send(error.message);
+                });
         })
         .catch((error) => {
             res.status(500).send(error.message);
         });
 });
 
-router.get("/getMessages", (req, res) => {
-    Chatroom.findById(req.query.id)
-        .populate("messages")
-        .then((chatroom) => {
-            res.send(chatroom.messages);
-        });
+router.get("/getChatroom", (req, res) => {
+    const chatroomID = req.query.chatroomID;
+    const userID = req.query.userID;
+    Chatroom.findOne({ _id: chatroomID, users: userID })
+    .then((chatroom) => {
+        res.send(chatroom);
+    })
 });
 
 router.post("/newMessage", (req, res) => {
     req.body.sender = req.user._id;
-    req.body.timestamp = new Date();
     Message.create(req.body)
         .then(() => {
             Chat
