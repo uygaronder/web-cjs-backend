@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
+    chatroom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chatroom',
+        required: true
+    },
     text: {
         type: String,
         required: true
     },
-    image: {
+    media: {
         type: String,
         required: false
     },
@@ -21,22 +26,32 @@ const messageSchema = new mongoose.Schema({
             type: Boolean,
             required: true
         },
-        replyTo: {
+        replyID: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Message',
             required: false
         }
     },
-    reactions: [
-        {
-        type: String,
-        required: true
+    reactions: [{
+            reaction: {
+                type: String,
+                required: true
+            },
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
         }
     ],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 

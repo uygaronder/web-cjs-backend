@@ -33,11 +33,17 @@ router.get("/getChats", (req, res) => {
             const chatroomIds = user.chats;
             Chatroom.find({ _id: { $in: chatroomIds }, users: userID })
                 .populate({
-                    path: 'messages',
-                    options: { sort: { createdAt: -1 }, limit: 1 }
+                    path: 'lastMessage',
                 })
                 .then((chatrooms) => {
-                    res.send(chatrooms);
+                    const chatroomsWithLastMessage = chatrooms.map((chatroom) => {
+                        const lastMessage = chatroom.lastMessage;
+                        if (lastMessage) {
+                            chatroom.lastMessage = lastMessage.text;
+                        }
+                        return chatroom;
+                    });
+                    res.send(chatroomsWithLastMessage);
                 })
                 .catch((error) => {
                     res.status(500).send(error.message);
@@ -52,26 +58,43 @@ router.get("/getChatroom", (req, res) => {
     const chatroomID = req.query.chatroomID;
     const userID = req.query.userID;
     Chatroom.findOne({ _id: chatroomID, users: userID })
-    .then((chatroom) => {
-        res.send(chatroom);
-    })
+        .then((chatroom) => {
+            if (!chatroom) {
+                return res.status(404).send("Chatroom not found");
+            }
+            Message.find({ chatroom: chatroomID })
+                .populate('user', 'username')
+                .then((messages) => {
+                    chatroom.messages = messages;
+                    res.send(chatroom);
+                })
+                .catch((error) => {
+                    res.status(500).send(error.message);
+                });
+        })
+        .catch((error) => {
+            res.status(500).send(error.message);
+        });
 });
 
 router.post("/newMessage", (req, res) => {
-    req.body.sender = req.user._id;
-    Message.create(req.body)
-        .then(() => {
-            Chat
-                .findByIdAndUpdate(req
-                    .body.room, {
-                        $push: {
-                            messages: Message._id
-                        }
-                    })
-                .then(() => {
-                    res.send("New message created");
-                });
+    const newMessage = new Message({
+        text: req.body.message,
+        chatroom: req.body.chatroomID,
+        reply: req.body.reply,
+        user: req.body.userID,
     });
+    newMessage.save()
+        .then(() => {
+            Chatroom.findById(req.body.chatroomID)
+                .then((chatroom) => {
+                    chatroom.lastMessage = newMessage._id;
+                    chatroom.save()
+                        .then(() => {
+                            res.send("Message sent");
+                        });
+                });
+        });
 });
 
 router.post("/deleteChatRoom", (req, res) => {
@@ -86,6 +109,10 @@ router.post("/deleteMessage", (req, res) => {
     Message.findById(req.body.id)
         .then((message) => {
             message.text = "This message has been deleted";
+            message.image = "";
+            message.replies = [];
+            message.reactions = [];
+            message.user = null;
             message.save()
                 .then(() => {
                     res.send("Message deleted");

@@ -35,12 +35,17 @@ const chatroomSchema = new mongoose.Schema({
             ref: 'User',
             required: false
         }],
+        admins: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: false
+        }],
     },
-    messages: [{
+    lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message',
-        required: true
-    }]
+        required: false
+    }
 });
 
 const Chatroom = mongoose.model('Chat', chatroomSchema);
