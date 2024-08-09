@@ -77,6 +77,15 @@ router.get("/getChatroom", (req, res) => {
         });
 });
 
+router.get("/getLastMessage", (req, res) => {
+    const chatroomID = req.query.chatroomID;
+    Chatroom.findById(chatroomID)
+        .populate({ path: 'lastMessage', populate: { path: 'user', select: 'username' } })
+        .then((chatroom) => {
+            res.send(chatroom.lastMessage);
+        });
+});
+
 router.post("/newMessage", (req, res) => {
     const newMessage = new Message({
         text: req.body.message,

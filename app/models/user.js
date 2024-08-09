@@ -56,6 +56,18 @@ const userSchema = new mongoose.Schema({
             token: String,
             expires: Date
         },
+        notifications: {
+            email: Boolean,
+            push: Boolean
+        },
+        status: {
+            type: String,
+            default: 'online'
+        },
+        userColor: {
+            type: String,
+            default: '#000000'
+        }
     },
 });
 
