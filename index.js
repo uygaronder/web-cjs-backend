@@ -10,8 +10,10 @@ const passport = require('passport');
 const app = express();
 const port = process.env.PORT || 5000;
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
 const cors = require('cors');
+
+const initializeSocket = require('./app/sockets/socket.js');
+initializeSocket(http);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,6 +55,7 @@ const userRouter = require("./app/routes/user.route.js");
 const notificationRouter = require("./app/routes/notification.route.js");
 */
 const chatRouter = require("./app/routes/chat.route.js");
+const chatroomRouter = require("./app/routes/chatroom.route.js");
 const apiRouter = require("./app/routes/api.route.js");
 const authRouter = require("./app/routes/auth.route.js");
 
@@ -61,17 +64,9 @@ app.use('/users', userRouter);
 app.use('/notifications', notificationRouter);
 */
 app.use('/chat', chatRouter);
+app.use('/chatroom', chatroomRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
-
-
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
-});
 
 app.use((req, res, next) => {
     req.io = io;

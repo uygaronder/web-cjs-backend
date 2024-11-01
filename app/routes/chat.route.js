@@ -77,6 +77,15 @@ router.get("/getChatroom", (req, res) => {
         });
 });
 
+router.get("/getMessages", (req, res) => {
+    const chatroomID = req.query.chatroomID
+    Message.find({ chatroom: chatroomID })
+        .populate('user', 'username')
+        .then((messages) => {
+            res.send(messages);
+        });
+});
+
 router.get("/getLastMessage", (req, res) => {
     const chatroomID = req.query.chatroomID;
     Chatroom.findById(chatroomID)
@@ -103,6 +112,13 @@ router.post("/newMessage", (req, res) => {
                             res.send("Message sent");
                         });
                 });
+        });
+});
+
+router.get("/getPublicChatrooms", (req, res) => {
+    Chatroom.find({ chatroomInfo: { private: false } })
+        .then((chatrooms) => {
+            res.send(chatrooms);
         });
 });
 

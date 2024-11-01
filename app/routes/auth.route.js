@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('../utils/nodemailer');
 
 const User = require('../models/user');
+const Chatroom = require('../models/chatroom');
 
 const sendAuthenticationEmail = async (email, token) => {
     const subject = 'Authentication';
@@ -30,6 +31,16 @@ router.post('/register', async (req, res) => {
             password: hashedPassword,
         });
         await user.save();
+
+        const chatroom = await Chatroom.findById(process.env.TESTROOM_ID);
+        if (chatroom) {
+            chatroom.users.push(user._id);
+            await chatroom.save().then(() => {
+                user.chats.push(chatroom._id);
+                user.save();
+            });
+        }
+
         res.status(201).send(user);
     } catch (error) {
         res.status(400).send(error);
@@ -64,7 +75,16 @@ router.post("/anonymous", async (req, res) => {
             anonymous: true
         });
         await user.save();
-        console.log(user);
+
+        const chatroom = await Chatroom.findById(process.env.TESTROOM_ID);
+        if (chatroom) {
+            chatroom.users.push(user._id);
+            await chatroom.save().then(() => {
+                user.chats.push(chatroom._id);
+                user.save();
+            });
+        }
+
         res.status(201).send(user);
     } catch (error) {
         res.status(400).send(error);
