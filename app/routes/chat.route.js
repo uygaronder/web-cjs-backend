@@ -77,6 +77,41 @@ router.get("/getChatroom", (req, res) => {
         });
 });
 
+router.post("/addUserToChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+    Chatroom.findById(chatroomID).then((chatroom) => {
+        chatroom.users.push(userID);
+        chatroom.save().then(() => {
+            User.findById(userID).then((user) => {
+                user.chats.push(chatroomID);
+                user.save().then(() => {
+                    res.send("User added to chatroom");
+                });
+            });
+        });
+    });
+});
+
+router.post("/removeUserFromChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+    Chatroom.findById(chatroomID).then((chatroom) => {
+        chatroom.users = chatroom.users.filter((id) => id != userID);
+        chatroom.save().then(() => {
+            User.findById(userID).then((user) => {
+                user.chats = user.chats.filter((id) => id != chatroomID);
+                user.save().then(() => {
+                    res.send("User removed from chatroom");
+                });
+            });
+        });
+    }
+    );
+});
+
 router.get("/getMessages", (req, res) => {
     const chatroomID = req.query.chatroomID
     Message.find({ chatroom: chatroomID })
@@ -96,11 +131,12 @@ router.get("/getLastMessage", (req, res) => {
 });
 
 router.post("/newMessage", (req, res) => {
+    console.log(req.body);
     const newMessage = new Message({
         text: req.body.message,
         chatroom: req.body.chatroomID,
-        reply: req.body.reply,
         user: req.body.userID,
+        reply: req.body.reply,
     });
     newMessage.save()
         .then(() => {
@@ -109,7 +145,7 @@ router.post("/newMessage", (req, res) => {
                     chatroom.lastMessage = newMessage._id;
                     chatroom.save()
                         .then(() => {
-                            res.send("Message sent");
+                            res.json(newMessage);
                         });
                 });
         });

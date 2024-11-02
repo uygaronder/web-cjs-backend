@@ -1,23 +1,24 @@
 const socketIo = require('socket.io');
 
 const chatSocket = require('./chat.socket.js');
-const chatroomSocket = require('./chatroom.socket.js');
 
 function initializeSocket(server) {
-    const io = socketIo(server);
+    console.log("Initializing socket...");
+
+    const io = socketIo(server, {
+        cors: {
+            origin: process.env.APP_URL,
+            methods: ['GET', 'POST'],
+            credentials: true,
+        }
+    });
+
+    //console.log("Socket initialized: ", io);
 
     const chatNamespace = io.of('/chat');
     chatNamespace.on('connection', (socket) => {
-        console.log("New client conneted to chat namespace: ", socket.id);
-
+        console.log("User connected: ", socket.id);
         chatSocket(chatNamespace, socket);
-    });
-
-    const chatroomNamespace = io.of('/chatroom');
-    chatroomNamespace.on('connection', (socket) => {
-        console.log("New client conneted to chatroom namespace: ", socket.id);
-
-        chatroomSocket(chatroomNamespace, socket);
     });
 }
 

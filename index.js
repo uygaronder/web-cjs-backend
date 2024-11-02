@@ -55,7 +55,6 @@ const userRouter = require("./app/routes/user.route.js");
 const notificationRouter = require("./app/routes/notification.route.js");
 */
 const chatRouter = require("./app/routes/chat.route.js");
-const chatroomRouter = require("./app/routes/chatroom.route.js");
 const apiRouter = require("./app/routes/api.route.js");
 const authRouter = require("./app/routes/auth.route.js");
 
@@ -64,21 +63,15 @@ app.use('/users', userRouter);
 app.use('/notifications', notificationRouter);
 */
 app.use('/chat', chatRouter);
-app.use('/chatroom', chatroomRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
-
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
 
 // test cookie
 app.get('/set-cookie', (req, res) => { res.cookie('test', 'cookie value'); res.send('Cookie set successfully'); });app.get('/set-cookie', (req, res) => { res.cookie('test', 'cookie value'); res.send('Cookie set successfully'); });
 app.get('/get-cookie', (req, res) => { res.send(req.cookies); });
 app.get('/delete-cookie', (req, res) => { res.clearCookie('test'); res.send('Cookie deleted successfully'); });
 
-app.listen(port, () => {
+http.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
     }
 );
