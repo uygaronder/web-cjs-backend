@@ -8,9 +8,6 @@ module.exports = (io, socket) => {
 
     // Listen for and broadcast messages
     socket.on('sendMessage', (messageData) => {
-        messageData.message.user = {
-            _id: messageData.message.user,
-        };
         io.to(messageData.chatroomID).emit('receiveMessage', messageData.message);
         //console.log('Message sent: ', messageData);
     });

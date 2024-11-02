@@ -45,9 +45,15 @@ const messageSchema = new mongoose.Schema({
         }
     ],
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        username: {
+            type: String,
+            required: true
+        }
     },
     createdAt: {
         type: Date,

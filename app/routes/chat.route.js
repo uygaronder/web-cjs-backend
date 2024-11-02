@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Chatroom = require('../models/chatroom');
 const Message = require('../models/message');
 const User = require('../models/user');
+
+
 
 router.post("/createchatroom", (req, res) => {
     const { chatroomInfo, creator } = req.body;
@@ -131,11 +134,13 @@ router.get("/getLastMessage", (req, res) => {
 });
 
 router.post("/newMessage", (req, res) => {
-    console.log(req.body);
     const newMessage = new Message({
         text: req.body.message,
         chatroom: req.body.chatroomID,
-        user: req.body.userID,
+        user: {
+            _id: req.body.user._id,
+            username: req.body.user.username,
+        },
         reply: req.body.reply,
     });
     newMessage.save()
