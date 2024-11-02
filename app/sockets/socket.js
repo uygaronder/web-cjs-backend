@@ -1,6 +1,7 @@
 const socketIo = require('socket.io');
 
 const chatSocket = require('./chat.socket.js');
+const notificationSocket = require('./notification.socket.js');
 
 function initializeSocket(server) {
     console.log("Initializing socket...");
@@ -13,12 +14,14 @@ function initializeSocket(server) {
         }
     });
 
-    //console.log("Socket initialized: ", io);
-
     const chatNamespace = io.of('/chat');
     chatNamespace.on('connection', (socket) => {
-        console.log("User connected: ", socket.id);
         chatSocket(chatNamespace, socket);
+    });
+
+    const notificationNamespace = io.of('/notification');
+    notificationNamespace.on('connection', (socket) => {
+        notificationSocket(notificationNamespace, socket);
     });
 }
 

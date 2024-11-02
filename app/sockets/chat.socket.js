@@ -1,6 +1,4 @@
 module.exports = (io, socket) => {
-    const user = socket.user;
-
     socket.on('joinRoom', (roomID) => {
         console.log(`User joined room ${roomID}`);
         socket.join(roomID);
@@ -9,7 +7,11 @@ module.exports = (io, socket) => {
     // Listen for and broadcast messages
     socket.on('sendMessage', (messageData) => {
         io.to(messageData.chatroomID).emit('receiveMessage', messageData.message);
-        //console.log('Message sent: ', messageData);
+        
+        io.to(messageData.chatroomID).emit('newMessageNotification', {
+            chatroomID: messageData.chatroomID,
+            message: messageData.message,
+        });
     });
 
     // Listen for and broadcast typing events
@@ -42,5 +44,4 @@ module.exports = (io, socket) => {
         console.log("User stopped typing in chatroom:", data.chatroomID);
         socket.to(data.chatroomID).emit("userStoppedTypingReceive", data); // Match the frontend
     });
-
 }
