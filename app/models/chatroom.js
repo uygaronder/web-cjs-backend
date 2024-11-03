@@ -40,6 +40,10 @@ const chatroomSchema = new mongoose.Schema({
             ref: 'User',
             required: false
         }],
+        roomCode: {
+            type: String,
+            required: false
+        }
     },
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,

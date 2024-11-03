@@ -14,7 +14,9 @@ router.post("/createchatroom", (req, res) => {
         users: [creator],
         chatroomInfo,
         messages: [],
+        roomCode: Math.random().toString(36).substring(2, 12),
     });
+
     User.findById(creator).then((user) => {
         user.chats.push(newChatroom._id);
         user.save().then(() => {
