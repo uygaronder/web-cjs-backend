@@ -1,8 +1,6 @@
 module.exports = (io, socket) => {
     socket.on('initializeUser', (user) => {
         socket.user = user;
-
-        console.log(`User initialized: ${socket.user._id}`);
     });
 
     socket.on('listenForUpdates', (chatroomIds) => {
