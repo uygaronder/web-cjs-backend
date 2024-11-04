@@ -11,7 +11,8 @@ module.exports = (io, socket) => {
 
         chatroomIds.forEach(chatroomId => {
             socket.join(chatroomId);
-            console.log(`User ${socket.user._id} is listening to room ${chatroomId} for updates`);
+            const currentTime = new Date().toISOString();
+            console.log(`[${currentTime}] User ${socket.user._id} is listening to room ${chatroomId} for updates`);
         });
     });
 };

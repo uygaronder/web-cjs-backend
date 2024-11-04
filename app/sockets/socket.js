@@ -1,10 +1,12 @@
 const socketIo = require('socket.io');
 
+const User = require('../models/user');
+
 const chatSocket = require('./chat.socket.js');
 const notificationSocket = require('./notification.socket.js');
+const userSocket = require('./user.socket.js');
 
 function initializeSocket(server) {
-    console.log("Initializing socket...");
 
     const io = socketIo(server, {
         cors: {
@@ -22,6 +24,11 @@ function initializeSocket(server) {
     const notificationNamespace = io.of('/notification');
     notificationNamespace.on('connection', (socket) => {
         notificationSocket(notificationNamespace, socket);
+    });
+
+    const userNamespace = io.of('/user');
+    userNamespace.on('connection', (socket) => {
+        userSocket(userNamespace, socket);
     });
 }
 

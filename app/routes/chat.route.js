@@ -159,9 +159,23 @@ router.post("/newMessage", (req, res) => {
 });
 
 router.get("/getPublicChatrooms", (req, res) => {
-    Chatroom.find({ chatroomInfo: { private: false } })
+    console.log(req.query);
+    // the search "algorithm" is pretty bad need rework
+    const nameQuery = req.query.query ? { "chatroomInfo.name": new RegExp(req.query.query, 'i') } : {};
+
+    Chatroom.find({ "chatroomInfo.roomPublicity": "public", ...nameQuery })
         .then((chatrooms) => {
-            res.send(chatrooms);
+            const chatroomsWithNamesAndAvatars = chatrooms.map((chatroom) => {
+                return {
+                    name: chatroom.chatroomInfo.name,
+                    avatar: chatroom.chatroomInfo.avatar,
+                    userCount: chatroom.users.length,
+                };
+            });
+            res.send(chatroomsWithNamesAndAvatars);
+        })
+        .catch((error) => {
+            res.status(500).send(error.message);
         });
 });
 
