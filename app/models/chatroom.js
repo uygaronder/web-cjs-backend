@@ -43,7 +43,11 @@ const chatroomSchema = new mongoose.Schema({
         roomCode: {
             type: String,
             required: false
-        }
+        },
+        avatar: {
+            type: String,
+            required: false
+        },
     },
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
