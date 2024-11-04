@@ -6,7 +6,7 @@ const Chatroom = require('../models/chatroom');
 const Message = require('../models/message');
 const User = require('../models/user');
 
-
+const { emitUserData } = require('../services/userService');
 
 router.post("/createchatroom", (req, res) => {
     const { chatroomInfo, creator } = req.body;
@@ -22,6 +22,7 @@ router.post("/createchatroom", (req, res) => {
         user.save().then(() => {
             newChatroom.save()
                 .then(() => {
+                    emitUserData(user._id);
                     res.send("Chatroom created");
                 })
                 .catch((error) => {
@@ -92,6 +93,7 @@ router.post("/addUserToChatroom", (req, res) => {
             User.findById(userID).then((user) => {
                 user.chats.push(chatroomID);
                 user.save().then(() => {
+                    emitUserData(userID);
                     res.send("User added to chatroom");
                 });
             });
@@ -109,6 +111,7 @@ router.post("/removeUserFromChatroom", (req, res) => {
             User.findById(userID).then((user) => {
                 user.chats = user.chats.filter((id) => id != chatroomID);
                 user.save().then(() => {
+                    emitUserData(userID);
                     res.send("User removed from chatroom");
                 });
             });
@@ -159,7 +162,7 @@ router.post("/newMessage", (req, res) => {
 });
 
 router.get("/getPublicChatrooms", (req, res) => {
-    console.log(req.query);
+    //console.log(req.query);
     // the search "algorithm" is pretty bad need rework
     const nameQuery = req.query.query ? { "chatroomInfo.name": new RegExp(req.query.query, 'i') } : {};
 
@@ -180,6 +183,17 @@ router.get("/getPublicChatrooms", (req, res) => {
 });
 
 router.post("/deleteChatRoom", (req, res) => {
+    User.find({
+        chats: req.body.id
+    })
+        .then((users) => {
+            users.forEach((user) => {
+                user.chats = user.chats.filter((chatID) => chatID != req.body.id);
+                user.save();
+                emitUserData(user._id);
+            });
+        });
+
     Chatroom.findByIdAndDelete(req.body.id)
         .then(() => {
             res.send("Chat room deleted");

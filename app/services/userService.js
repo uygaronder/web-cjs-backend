@@ -16,4 +16,19 @@ async function updateUserData(userID, data) {
     }
 }
 
-module.exports = updateUserData;
+async function emitUserData(userID) {
+    try {
+        const user = await User.findById(userID);
+
+        if (user){
+            io.getIO().emit('updateUserData', user);
+        }
+
+        return user;
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+module.exports = { updateUserData, emitUserData };
