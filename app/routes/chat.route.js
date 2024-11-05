@@ -63,8 +63,16 @@ router.get("/getChats", (req, res) => {
 router.get("/getChatroom", (req, res) => {
     const chatroomID = req.query.chatroomID;
     const userID = req.query.userID;
+    //console.log(chatroomID," : " , userID);
+
+    if (!mongoose.Types.ObjectId.isValid(chatroomID) || !mongoose.Types.ObjectId.isValid(userID)) {
+        return res.send({ error: "Invalid ID" });
+    }
+
     Chatroom.findOne({ _id: chatroomID, users: userID })
         .then((chatroom) => {
+            console.log("chatroom: ", chatroom);
+
             if (!chatroom) {
                 return res.status(404).send("Chatroom not found");
             }
@@ -184,20 +192,22 @@ router.get("/getPublicChatrooms", (req, res) => {
 
 router.post("/deleteChatRoom", (req, res) => {
     User.find({
-        chats: req.body.id
+        chats: req.body.chatroomID
     })
         .then((users) => {
             users.forEach((user) => {
-                user.chats = user.chats.filter((chatID) => chatID != req.body.id);
+                user.chats = user.chats.filter((chatID) => chatID != req.body.chatroomID);
                 user.save();
                 emitUserData(user._id);
             });
+
+            Chatroom.findByIdAndDelete(req.body.id)
+                .then(() => {
+                    res.send("Chat room deleted");
+                });
         });
 
-    Chatroom.findByIdAndDelete(req.body.id)
-        .then(() => {
-            res.send("Chat room deleted");
-        });
+    
 }
 );
 
