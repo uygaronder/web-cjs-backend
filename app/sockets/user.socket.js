@@ -1,6 +1,15 @@
 const User = require('../models/user');
 
+const { userSocketMap } = require('./userSocketMap');
+
 module.exports = (io, socket) => {
+    const userId = socket.handshake.query.userId;
+    if (userId) {
+        userSocketMap[userId] = socket.id;
+    } else {
+        console.error('User ID is missing in handshake query');
+    }
+
     socket.on("requestUserUpdate", () => {
         const userId = socket.handshake.query.userId;
     
@@ -23,5 +32,6 @@ module.exports = (io, socket) => {
 
     socket.on('disconnect', () => {
         console.log(`User with socket ID ${socket.id} disconnected`);
+        delete userSocketMap[socket.id];
     });
 };
