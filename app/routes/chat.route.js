@@ -23,7 +23,7 @@ router.post("/createchatroom", (req, res) => {
             newChatroom.save()
                 .then(() => {
                     emitUserData(user._id);
-                    res.send("Chatroom created");
+                    res.send(newChatroom);
                 })
                 .catch((error) => {
                     res.status(500).send(error.message);
@@ -71,8 +71,6 @@ router.get("/getChatroom", (req, res) => {
 
     Chatroom.findOne({ _id: chatroomID, users: userID })
         .then((chatroom) => {
-            console.log("chatroom: ", chatroom);
-
             if (!chatroom) {
                 return res.status(404).send("Chatroom not found");
             }
@@ -163,6 +161,8 @@ router.post("/newMessage", (req, res) => {
                     chatroom.lastMessage = newMessage._id;
                     chatroom.save()
                         .then(() => {
+                            emitUserData(req.body.user._id);
+
                             res.json(newMessage);
                         });
                 });
@@ -200,8 +200,7 @@ router.post("/deleteChatRoom", (req, res) => {
                 user.save();
                 emitUserData(user._id);
             });
-
-            Chatroom.findByIdAndDelete(req.body.id)
+            Chatroom.findByIdAndDelete(req.body.chatroomID)
                 .then(() => {
                     res.send("Chat room deleted");
                 });

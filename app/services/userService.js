@@ -1,34 +1,21 @@
 const User = require('../models/user');
-const io = require('../sockets/socket');
 
-async function updateUserData(userID, data) {
-    try {
-        const user = await User.findByIdAndUpdate(userID, data, { new: true });
+const { userSocketMap } = require('../sockets/userSocketMap');
 
-        if (user){
-            io.getIO().emit('updateUserData', user);
-        }
+import { getIO } from '../sockets/socket';
 
-        return user;
-    }
-    catch (error) {
-        console.error(error);
-    }
-}
 
 async function emitUserData(userID) {
     try {
         const user = await User.findById(userID);
+        const socketId = userSocketMap[userID];
 
-        if (user){
-            io.getIO().emit('updateUserData', user);
+        if (user && socketId) {
+            return getIO().to(socketId).emit('updateUserData', user);
         }
-
-        return user;
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error);
     }
 }
 
-module.exports = { updateUserData, emitUserData };
+module.exports = { emitUserData };

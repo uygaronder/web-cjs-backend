@@ -1,11 +1,14 @@
 const User = require('../models/user');
 
 const { userSocketMap } = require('./userSocketMap');
+const { emitUserData } = require('../services/userService');
 
 module.exports = (io, socket) => {
     const userId = socket.handshake.query.userId;
     if (userId) {
         userSocketMap[userId] = socket.id;
+        console.log(`User with ID ${userId} connected with socket ID ${socket.id}`);
+        console.log('User socket map:', userSocketMap);
     } else {
         console.error('User ID is missing in handshake query');
     }
@@ -14,10 +17,11 @@ module.exports = (io, socket) => {
         const userId = socket.handshake.query.userId;
     
         if (userId) {
-            User.findByIdAndUpdate(userId, { socketId: socket.id }, { new: true })
+            User.findByIdAndUpdate(userId)
                 .then((user) => {
                     if (user) {
-                        socket.emit('userUpdated', user);
+                        console.log('User updated:', user.username);
+                        emitUserData(userId);
                     } else {
                         console.error('User not found');
                     }

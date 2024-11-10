@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 const http = require('http').createServer(app);
 const cors = require('cors');
 
-const initializeSocket = require('./app/sockets/socket.js');
+const { initializeSocket } = require('./app/sockets/socket.js');
 initializeSocket(http);
 
 app.use(express.json());

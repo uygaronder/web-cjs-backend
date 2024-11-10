@@ -1,14 +1,13 @@
 const socketIo = require('socket.io');
 
-const User = require('../models/user');
-
 const chatSocket = require('./chat.socket.js');
 const notificationSocket = require('./notification.socket.js');
 const userSocket = require('./user.socket.js');
 
-function initializeSocket(server) {
+let io;
 
-    const io = socketIo(server, {
+function initializeSocket(server) {
+    io = socketIo(server, {
         cors: {
             origin: process.env.APP_URL,
             methods: ['GET', 'POST'],
@@ -32,4 +31,13 @@ function initializeSocket(server) {
     });
 }
 
-module.exports = initializeSocket;
+const getIO = () => {
+    console.log('Getting IO');
+    if (!io) {
+        throw new Error('Socket.io not initialized');
+    }
+
+    return io;
+}
+
+module.exports = { initializeSocket, getIO };
