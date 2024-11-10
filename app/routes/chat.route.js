@@ -163,6 +163,7 @@ router.post("/newMessage", (req, res) => {
                     chatroom.lastMessage = newMessage._id;
                     chatroom.save()
                         .then(() => {
+                            emitUserData(req.body.user._id);
                             res.json(newMessage);
                         });
                 });
@@ -181,6 +182,7 @@ router.get("/getPublicChatrooms", (req, res) => {
                     name: chatroom.chatroomInfo.name,
                     avatar: chatroom.chatroomInfo.avatar,
                     userCount: chatroom.users.length,
+                    id: chatroom._id,
                 };
             });
             res.send(chatroomsWithNamesAndAvatars);
@@ -226,5 +228,23 @@ router.post("/deleteMessage", (req, res) => {
         });
 });
 
+router.post("/joinPublicChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+
+    Chatroom.findById(chatroomID).then((chatroom) => {
+        chatroom.users.push(userID);
+        chatroom.save().then(() => {
+            User.findById(userID).then((user) => {
+                user.chats.push(chatroomID);
+                user.save().then(() => {
+                    emitUserData(userID);
+                    res.send("User added to chatroom");
+                });
+            });
+        });
+    });
+});
 
 module.exports = router;

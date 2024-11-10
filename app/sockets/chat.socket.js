@@ -7,7 +7,7 @@ module.exports = (io, socket) => {
 
     // Listen for and broadcast messages
     socket.on('sendMessage', (messageData) => {
-        console.log(`User sent message to room ${messageData.chatroomID}`);
+        //console.log(`User sent message to room ${messageData.chatroomID}`);
 
         io.to(messageData.chatroomID).emit('receiveMessage', messageData.message);
 

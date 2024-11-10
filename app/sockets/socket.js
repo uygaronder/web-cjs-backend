@@ -6,7 +6,9 @@ const chatSocket = require('./chat.socket.js');
 const notificationSocket = require('./notification.socket.js');
 const userSocket = require('./user.socket.js');
 
-function initializeSocket(server) {
+let userNamespace;
+
+const initializeSocket = (server) => {
 
     const io = socketIo(server, {
         cors: {
@@ -26,10 +28,19 @@ function initializeSocket(server) {
         notificationSocket(notificationNamespace, socket);
     });
 
-    const userNamespace = io.of('/user');
+    userNamespace = io.of('/user');
     userNamespace.on('connection', (socket) => {
         userSocket(userNamespace, socket);
     });
+    
+    
 }
 
-module.exports = initializeSocket;
+const getIO = () => {
+    if (!userNamespace) {
+        throw new Error('Namespace not initialized');
+    }
+    return userNamespace;
+}
+
+module.exports = { initializeSocket, getIO };

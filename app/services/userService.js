@@ -1,27 +1,14 @@
 const User = require('../models/user');
-const io = require('../sockets/socket');
 
-async function updateUserData(userID, data) {
-    try {
-        const user = await User.findByIdAndUpdate(userID, data, { new: true });
-
-        if (user){
-            io.getIO().emit('updateUserData', user);
-        }
-
-        return user;
-    }
-    catch (error) {
-        console.error(error);
-    }
-}
+const { updateUserData } = require('../sockets/user.socket');
 
 async function emitUserData(userID) {
     try {
         const user = await User.findById(userID);
 
         if (user){
-            io.getIO().emit('updateUserData', user);
+            updateUserData(user);
+            console.log('Emitting user data:', user.username);
         }
 
         return user;
@@ -31,4 +18,4 @@ async function emitUserData(userID) {
     }
 }
 
-module.exports = { updateUserData, emitUserData };
+module.exports = { emitUserData };
