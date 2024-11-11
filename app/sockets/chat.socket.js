@@ -40,13 +40,19 @@ module.exports = (io, socket) => {
             });
     });
 
+    socket.on('userJoinedChatroom', (data) => {
+        socket.to(data.chatroomID).emit("userJoinedReceive", data); // Match the frontend
+    });
+
+    socket.on('userLeftChatroom', (data) => {
+        socket.to(data.chatroomID).emit("userLeftReceive", data); // Match the frontend
+    });
+
     socket.on('typing', (data) => {
-        console.log("User typing in chatroom:", data.chatroomID);
         socket.to(data.chatroomID).emit("userTypingReceive", data); // Match the frontend
     });
 
     socket.on("stopTyping", (data) => {
-        console.log("User stopped typing in chatroom:", data.chatroomID);
         socket.to(data.chatroomID).emit("userStoppedTypingReceive", data); // Match the frontend
     });
 }

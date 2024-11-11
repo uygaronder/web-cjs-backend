@@ -71,8 +71,6 @@ router.get("/getChatroom", (req, res) => {
 
     Chatroom.findOne({ _id: chatroomID, users: userID })
         .then((chatroom) => {
-            console.log("chatroom: ", chatroom);
-
             if (!chatroom) {
                 return res.status(404).send("Chatroom not found");
             }
@@ -171,7 +169,6 @@ router.post("/newMessage", (req, res) => {
 });
 
 router.get("/getPublicChatrooms", (req, res) => {
-    //console.log(req.query);
     // the search "algorithm" is pretty bad need rework
     const nameQuery = req.query.query ? { "chatroomInfo.name": new RegExp(req.query.query, 'i') } : {};
 
@@ -208,8 +205,6 @@ router.post("/deleteChatRoom", (req, res) => {
                     res.send("Chat room deleted");
                 });
         });
-
-    
 }
 );
 
@@ -233,14 +228,48 @@ router.post("/joinPublicChatroom", (req, res) => {
         .body
     ;
 
-    Chatroom.findById(chatroomID).then((chatroom) => {
-        chatroom.users.push(userID);
-        chatroom.save().then(() => {
-            User.findById(userID).then((user) => {
-                user.chats.push(chatroomID);
-                user.save().then(() => {
-                    emitUserData(userID);
-                    res.send("User added to chatroom");
+    const newMessage = new Message({
+        type: "system",
+        text: `${req.body.username} has joined the chat`,
+        chatroom: chatroomID,
+    });
+    newMessage.save().then(() => {
+        Chatroom.findById(chatroomID).then((chatroom) => {
+            chatroom.users.push(userID);
+            chatroom.save().then(() => {
+                User.findById(userID).then((user) => {
+                    user.chats.push(chatroomID);
+                    user.save().then(() => {
+                        emitUserData(userID);
+                        res.send("User added to chatroom");
+                    });
+                });
+            });
+        });
+    });
+});
+
+router.post("/leaveChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+    console.log("leaving chatroom: ", chatroomID, " : ", userID);
+
+    const newMessage = new Message({
+        type: "system",
+        text: `${req.body.username} has left the chat`,
+        chatroom: chatroomID,
+    });
+    newMessage.save().then(() => {
+        Chatroom.findById(chatroomID).then((chatroom) => {
+            chatroom.users = chatroom.users.filter((id) => id != userID);
+            chatroom.save().then(() => {
+                User.findById(userID).then((user) => {
+                    user.chats = user.chats.filter((id) => id != chatroomID);
+                    user.save().then(() => {
+                        emitUserData(userID);
+                        res.send("User removed from chatroom");
+                    });
                 });
             });
         });
