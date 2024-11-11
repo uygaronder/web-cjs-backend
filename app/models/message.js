@@ -24,12 +24,15 @@ const messageSchema = new mongoose.Schema({
     reply: {
         isAReply: {
             type: Boolean,
-            required: true
+            required: true,
+            default: false
         },
         replyID: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Message',
-            required: false
+            required: function() {
+                return this.isAReply;
+            }
         }
     },
     reactions: [{
@@ -48,16 +51,29 @@ const messageSchema = new mongoose.Schema({
         _id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true
+            required: function() {
+                return this.type !== 'system';
+            }
         },
         username: {
             type: String,
-            required: true
+            required: function() {
+                return this.type !== 'system';
+            }
         }
     },
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    type: {
+        type: String,
+        default: 'text'
+    },
+    // Subtext is used for system messages to provide additional information user ids to point to profiles etc.
+    subtext: {
+        type: String,
+        required: false
     }
 });
 

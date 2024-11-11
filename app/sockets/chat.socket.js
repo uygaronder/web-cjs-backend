@@ -5,6 +5,11 @@ module.exports = (io, socket) => {
 
     // Listen for and broadcast messages
     socket.on('sendMessage', (messageData) => {
+<<<<<<< HEAD
+=======
+        //console.log(`User sent message to room ${messageData.chatroomID}`);
+
+>>>>>>> 9f024f5039e7487ef1fcc518706357f9f4708a68
         io.to(messageData.chatroomID).emit('receiveMessage', messageData.message);
 
         io.to(messageData.chatroomID).emit('newMessageNotification', {
@@ -34,13 +39,19 @@ module.exports = (io, socket) => {
             });
     });
 
+    socket.on('userJoinedChatroom', (data) => {
+        socket.to(data.chatroomID).emit("userJoinedReceive", data); // Match the frontend
+    });
+
+    socket.on('userLeftChatroom', (data) => {
+        socket.to(data.chatroomID).emit("userLeftReceive", data); // Match the frontend
+    });
+
     socket.on('typing', (data) => {
-        console.log("User typing in chatroom:", data.chatroomID);
         socket.to(data.chatroomID).emit("userTypingReceive", data); // Match the frontend
     });
 
     socket.on("stopTyping", (data) => {
-        console.log("User stopped typing in chatroom:", data.chatroomID);
         socket.to(data.chatroomID).emit("userStoppedTypingReceive", data); // Match the frontend
     });
 }

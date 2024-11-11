@@ -162,7 +162,10 @@ router.post("/newMessage", (req, res) => {
                     chatroom.save()
                         .then(() => {
                             emitUserData(req.body.user._id);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9f024f5039e7487ef1fcc518706357f9f4708a68
                             res.json(newMessage);
                         });
                 });
@@ -170,7 +173,6 @@ router.post("/newMessage", (req, res) => {
 });
 
 router.get("/getPublicChatrooms", (req, res) => {
-    //console.log(req.query);
     // the search "algorithm" is pretty bad need rework
     const nameQuery = req.query.query ? { "chatroomInfo.name": new RegExp(req.query.query, 'i') } : {};
 
@@ -181,6 +183,7 @@ router.get("/getPublicChatrooms", (req, res) => {
                     name: chatroom.chatroomInfo.name,
                     avatar: chatroom.chatroomInfo.avatar,
                     userCount: chatroom.users.length,
+                    id: chatroom._id,
                 };
             });
             res.send(chatroomsWithNamesAndAvatars);
@@ -205,8 +208,6 @@ router.post("/deleteChatRoom", (req, res) => {
                     res.send("Chat room deleted");
                 });
         });
-
-    
 }
 );
 
@@ -225,5 +226,57 @@ router.post("/deleteMessage", (req, res) => {
         });
 });
 
+router.post("/joinPublicChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+
+    const newMessage = new Message({
+        type: "system",
+        text: `${req.body.username} has joined the chat`,
+        chatroom: chatroomID,
+    });
+    newMessage.save().then(() => {
+        Chatroom.findById(chatroomID).then((chatroom) => {
+            chatroom.users.push(userID);
+            chatroom.save().then(() => {
+                User.findById(userID).then((user) => {
+                    user.chats.push(chatroomID);
+                    user.save().then(() => {
+                        emitUserData(userID);
+                        res.send("User added to chatroom");
+                    });
+                });
+            });
+        });
+    });
+});
+
+router.post("/leaveChatroom", (req, res) => {
+    const { chatroomID, userID } = req
+        .body
+    ;
+    console.log("leaving chatroom: ", chatroomID, " : ", userID);
+
+    const newMessage = new Message({
+        type: "system",
+        text: `${req.body.username} has left the chat`,
+        chatroom: chatroomID,
+    });
+    newMessage.save().then(() => {
+        Chatroom.findById(chatroomID).then((chatroom) => {
+            chatroom.users = chatroom.users.filter((id) => id != userID);
+            chatroom.save().then(() => {
+                User.findById(userID).then((user) => {
+                    user.chats = user.chats.filter((id) => id != chatroomID);
+                    user.save().then(() => {
+                        emitUserData(userID);
+                        res.send("User removed from chatroom");
+                    });
+                });
+            });
+        });
+    });
+});
 
 module.exports = router;
