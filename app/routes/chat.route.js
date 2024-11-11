@@ -162,10 +162,6 @@ router.post("/newMessage", (req, res) => {
                     chatroom.save()
                         .then(() => {
                             emitUserData(req.body.user._id);
-<<<<<<< HEAD
-
-=======
->>>>>>> 9f024f5039e7487ef1fcc518706357f9f4708a68
                             res.json(newMessage);
                         });
                 });

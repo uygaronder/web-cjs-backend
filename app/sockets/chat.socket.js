@@ -5,11 +5,8 @@ module.exports = (io, socket) => {
 
     // Listen for and broadcast messages
     socket.on('sendMessage', (messageData) => {
-<<<<<<< HEAD
-=======
         //console.log(`User sent message to room ${messageData.chatroomID}`);
 
->>>>>>> 9f024f5039e7487ef1fcc518706357f9f4708a68
         io.to(messageData.chatroomID).emit('receiveMessage', messageData.message);
 
         io.to(messageData.chatroomID).emit('newMessageNotification', {

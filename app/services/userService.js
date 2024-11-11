@@ -1,12 +1,11 @@
 const User = require('../models/user');
 
+const { userSocketMap } = require('../sockets/userSocketMap');
 const { updateUserData } = require('../sockets/user.socket');
 
 async function emitUserData(userID) {
     try {
         const user = await User.findById(userID);
-        const socketId = userSocketMap[userID];
-
         if (user){
             updateUserData(user);
             console.log('Emitting user data:', user.username);
