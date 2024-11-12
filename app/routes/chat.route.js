@@ -240,7 +240,7 @@ router.post("/joinPublicChatroom", (req, res) => {
                     user.chats.push(chatroomID);
                     user.save().then(() => {
                         emitUserData(userID);
-                        res.send("User added to chatroom");
+                        res.json({ message: "User added to chatroom" });
                     });
                 });
             });
@@ -267,7 +267,7 @@ router.post("/leaveChatroom", (req, res) => {
                     user.chats = user.chats.filter((id) => id != chatroomID);
                     user.save().then(() => {
                         emitUserData(userID);
-                        res.send("User removed from chatroom");
+                        res.json({ message: "User removed from chatroom" });
                     });
                 });
             });

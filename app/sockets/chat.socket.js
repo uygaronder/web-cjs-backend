@@ -41,7 +41,20 @@ module.exports = (io, socket) => {
     });
 
     socket.on('userLeftChatroom', (data) => {
-        socket.to(data.chatroomID).emit("userLeftReceive", data); // Match the frontend
+        console.log("User left chatroom: ", data);
+
+        const messageInfo = {
+            chatroomID: data.chatroomID,
+            message: {
+                user: {
+                    username: "System",
+                },
+                text: `${data.username} has left the chatroom`,
+                createdAt: new Date(),
+            }
+        };
+
+        socket.to(data.chatroomID).emit("userLeftReceive", messageInfo); // Match the frontend
     });
 
     socket.on('typing', (data) => {
