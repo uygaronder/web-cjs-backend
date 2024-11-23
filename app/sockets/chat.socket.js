@@ -37,31 +37,42 @@ module.exports = (io, socket) => {
     });
 
     socket.on('userJoinedChatroom', (data) => {
-        socket.to(data.chatroomID).emit("userJoinedReceive", data); // Match the frontend
+        console.log("User joined chatroom: ", data);
+
+        const message = {
+                chatroom: data.chatroomID,
+                user: {
+                    username: "System",
+                },
+                type: "system",
+                text: `${data.username} has joined the chatroom`,
+                createdAt: new Date(),
+        };
+
+        socket.to(data.chatroomID).emit("userJoinedReceive", message);
     });
 
     socket.on('userLeftChatroom', (data) => {
         console.log("User left chatroom: ", data);
 
-        const messageInfo = {
-            chatroomID: data.chatroomID,
-            message: {
-                user: {
-                    username: "System",
-                },
-                text: `${data.username} has left the chatroom`,
-                createdAt: new Date(),
-            }
-        };
+        const message = {
+            chatroom: data.chatroomID,
+            user: {
+                username: "System",
+            },
+            type: "system",
+            text: `${data.username} has left the chatroom`,
+            createdAt: new Date(),
+        }
 
-        socket.to(data.chatroomID).emit("userLeftReceive", messageInfo); // Match the frontend
+        socket.to(data.chatroomID).emit("userLeftReceive", message);
     });
 
     socket.on('typing', (data) => {
-        socket.to(data.chatroomID).emit("userTypingReceive", data); // Match the frontend
+        socket.to(data.chatroomID).emit("userTypingReceive", data);
     });
 
     socket.on("stopTyping", (data) => {
-        socket.to(data.chatroomID).emit("userStoppedTypingReceive", data); // Match the frontend
+        socket.to(data.chatroomID).emit("userStoppedTypingReceive", data);
     });
 }
