@@ -57,6 +57,7 @@ const notificationRouter = require("./app/routes/notification.route.js");
 const chatRouter = require("./app/routes/chat.route.js");
 const apiRouter = require("./app/routes/api.route.js");
 const authRouter = require("./app/routes/auth.route.js");
+const uploadRouter = require("./app/routes/upload.route.js");
 
 /*
 app.use('/users', userRouter);
@@ -65,6 +66,7 @@ app.use('/notifications', notificationRouter);
 app.use('/chat', chatRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
+app.use('/upload', uploadRouter);
 
 // test cookie
 app.get('/set-cookie', (req, res) => { res.cookie('test', 'cookie value'); res.send('Cookie set successfully'); });app.get('/set-cookie', (req, res) => { res.cookie('test', 'cookie value'); res.send('Cookie set successfully'); });
