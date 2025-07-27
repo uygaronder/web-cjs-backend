@@ -126,13 +126,23 @@ router.post("/removeUserFromChatroom", (req, res) => {
     );
 });
 
-router.get("/getMessages", (req, res) => {
-    const chatroomID = req.query.chatroomID
-    Message.find({ chatroom: chatroomID })
-        .populate('user', 'username')
-        .then((messages) => {
-            res.send(messages);
-        });
+router.get("/getMessages", async (req, res) => {
+    console.log("req: ",req.query);
+    const { chatroomID, skip = 0, limit = 50  } = req.query;
+
+    console.log("Fetching messages for chatroom:", chatroomID, "Skip:", skip, "Limit:", limit);
+
+    try {
+        const messages = await Message.find({ chatroom: chatroomID })
+            .sort({ createdAt: -1 })
+            .skip(parseInt(skip))
+            .limit(parseInt(limit))
+            .populate('user', 'username');
+
+        res.send(messages.reverse());
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
 router.get("/getLastMessage", (req, res) => {
